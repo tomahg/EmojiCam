@@ -2,7 +2,8 @@ from deepface import DeepFace
 from utils.cv_utils import overlay
 import cv2
 
-ICON_WIDTH = 50
+ICONS = ['auto', 'smile', 'happy', 'lol', 'starstruck', 'love', 'shades', 'explode', 'angry', 'yawn', 'surprise', 'sad', 'neutral']
+ICON_WIDTH = 49
 mode = None
 
 def main():
@@ -49,7 +50,7 @@ def main():
                 
                 print_menu(frame)
                 cv2.namedWindow('Emotion', cv2.WINDOW_NORMAL)
-                cv2.setMouseCallback('Emotion', onMouse)
+                cv2.setMouseCallback('Emotion', on_mouse)
                 cv2.imshow('Emotion', frame)
             except Exception as e:
                 print(e)
@@ -61,51 +62,17 @@ def main():
     cv2.destroyAllWindows()
 
 def print_menu(frame):
-    overlay(frame, 'auto', 0*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'smile', 1*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'happy', 2*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'lol', 3*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'starstruck', 4*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'love', 5*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'shades', 6*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'explode', 7*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'angry', 8*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'yawn', 9*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'surprise', 10*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'sad', 11*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
-    overlay(frame, 'neutral', 12*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
+    for i, icon in enumerate(ICONS):
+        overlay(frame, icon, i*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
     
-def onMouse(event, x, y, flags, param):
+def on_mouse(event, x, y, flags, param):
     global mode
     if event == cv2.EVENT_LBUTTONDOWN:
         if y > 480-ICON_WIDTH:
-            if x < 1*ICON_WIDTH:
-                mode = 'auto' if mode != 'auto' else None
-            elif x < 2*ICON_WIDTH:
-                mode = 'smile' if mode != 'smile' else None
-            elif x < 3*ICON_WIDTH:
-                mode = 'happy' if mode != 'happy' else None
-            elif x < 4*ICON_WIDTH:
-                mode = 'lol' if mode != 'lol' else None
-            elif x < 5*ICON_WIDTH:
-                mode = 'starstruck' if mode != 'starstruck' else None
-            elif x < 6*ICON_WIDTH:
-                mode = 'love' if mode != 'love' else None
-            elif x < 7*ICON_WIDTH:
-                mode = 'shades' if mode != 'shades' else None
-            elif x < 8*ICON_WIDTH:
-                mode = 'explode' if mode != 'explode' else None
-            elif x < 9*ICON_WIDTH:
-                mode = 'angry' if mode != 'angry' else None
-            elif x < 10*ICON_WIDTH:
-                mode = 'yawn' if mode != 'yawn' else None
-            elif x < 11*ICON_WIDTH:
-                mode = 'surprise' if mode != 'surprise' else None
-            elif x < 12*ICON_WIDTH:
-                mode = 'sad' if mode != 'sad' else None
-            elif x < 13*ICON_WIDTH:
-                mode = 'neutral' if mode != 'neutral' else None
-        #print(mode)
+            for i, icon in enumerate(ICONS):
+                if x < (i+1)*ICON_WIDTH:
+                    mode = icon if mode != icon else None
+                    return
 
 def print_string(i, s, x, y, w, h, fs, ft):
     font = cv2.FONT_HERSHEY_SIMPLEX
