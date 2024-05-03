@@ -46,7 +46,7 @@ def main():
                                 # Print emoji
                                 overlay(frame, dominant_emotion, 440,  i*200, 200, 200)
                         else:
-                          overlay(frame, mode, int(x-(w*0.25)), int(y-(h*0.25)), int(w*1.6), int(h*1.6))  
+                          overlay(frame, mode, int(x-(w*0.35)), int(y-(h*0.4)), int(w*1.8), int(h*1.8))  
                 
                 print_menu(frame)
                 cv2.namedWindow('Emotion', cv2.WINDOW_NORMAL)
