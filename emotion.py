@@ -2,7 +2,8 @@ from deepface import DeepFace
 from utils.cv_utils import overlay
 import cv2
 
-ICONS = ['auto', 'smile', 'happy', 'lol', 'starstruck', 'love', 'shades', 'explode', 'angry', 'yawn', 'surprise', 'sad', 'neutral']
+EMOTION_ICONS = ['auto', 'smile', 'happy', 'lol', 'starstruck', 'love', 'shades', 'explode', 'angry', 'yawn', 'surprise', 'sad', 'neutral']
+GESTURE_ICONS = ['thumbup', 'thumbdown', 'clap', 'fist', 'raised']
 ICON_WIDTH = 49
 mode = None
 
@@ -13,41 +14,43 @@ def main():
         if ready:
             try:
                 frame = cv2.flip(flipped_frame, 1)
-                emotions = DeepFace.analyze(img_path = frame, actions = ['emotion'], enforce_detection=False)
-                for i, emotion in enumerate(emotions):
-                    if emotion['face_confidence'] > 0.5:
-                        dominant_emotion = emotion['dominant_emotion']
-
-                        x = emotion['region']['x']
-                        y = emotion['region']['y']
-                        w = emotion['region']['w']
-                        h = emotion['region']['h']
-                        
-                        # Define the rectangle
-                        start_point = (x, y)
-                        end_point = (x + w, y + h)
-                        color = (175, 175, 175)  # BGR
-                        thickness = 2
-                    
-                        if mode == None:
-                            pass
-                        elif mode == 'auto':
-                            # Draw the rectangle on the image
-                            cv2.rectangle(frame, start_point, end_point, color, thickness)
-                            
-                            confidence = emotion['emotion'][dominant_emotion]
-                            if confidence > 70:
-                                # Print dominant emotion
-                                print_string(frame, dominant_emotion, x, y, w, h, 1.1, 2)
-                                
-                                # Print confidence                            
-                                print_string(frame, str(int(confidence)) + '%', x, y + 40, w, h, 0.7, 1)
-
-                                # Print emoji
-                                overlay(frame, dominant_emotion, 440,  i*200, 200, 200)
-                        else:
-                          overlay(frame, mode, int(x-(w*0.35)), int(y-(h*0.4)), int(w*1.8), int(h*1.8))  
                 
+                if mode in GESTURE_ICONS:
+                    overlay(frame, mode, 0,  0, 300, 300)
+                elif mode != None:
+                    emotions = DeepFace.analyze(img_path = frame, actions = ['emotion'], enforce_detection=False)
+                    for i, emotion in enumerate(emotions):
+                        if emotion['face_confidence'] > 0.5:
+                            dominant_emotion = emotion['dominant_emotion']
+
+                            x = emotion['region']['x']
+                            y = emotion['region']['y']
+                            w = emotion['region']['w']
+                            h = emotion['region']['h']
+                            
+                            # Define the rectangle
+                            start_point = (x, y)
+                            end_point = (x + w, y + h)
+                            color = (175, 175, 175)  # BGR
+                            thickness = 2
+                        
+                            if mode == 'auto':
+                                # Draw the rectangle on the image
+                                cv2.rectangle(frame, start_point, end_point, color, thickness)
+                                
+                                confidence = emotion['emotion'][dominant_emotion]
+                                if confidence > 70:
+                                    # Print dominant emotion
+                                    print_string(frame, dominant_emotion, x, y, w, h, 1.1, 2)
+                                    
+                                    # Print confidence                            
+                                    print_string(frame, str(int(confidence)) + '%', x, y + 40, w, h, 0.7, 1)
+
+                                    # Print emoji
+                                    overlay(frame, dominant_emotion, 430,  i*200, 200, 200)
+                            else:
+                                if mode in EMOTION_ICONS:
+                                    overlay(frame, mode, int(x-(w*0.35)), int(y-(h*0.4)), int(w*1.8), int(h*1.8))
                 print_menu(frame)
                 cv2.namedWindow('Emotion', cv2.WINDOW_NORMAL)
                 cv2.setMouseCallback('Emotion', on_mouse)
@@ -55,22 +58,29 @@ def main():
             except Exception as e:
                 print(e)
 
-            if cv2.waitKey(1) == 27:  # 27 == ESC key
+            if cv2.waitKey(1) == 27:  # ESC
                 break
 
     cap.release()
     cv2.destroyAllWindows()
 
 def print_menu(frame):
-    for i, icon in enumerate(ICONS):
+    for i, icon in enumerate(EMOTION_ICONS):
         overlay(frame, icon, i*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
+    for i, icon in enumerate(GESTURE_ICONS):
+        overlay(frame, icon, 640-ICON_WIDTH,  i*ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
     
 def on_mouse(event, x, y, flags, param):
     global mode
     if event == cv2.EVENT_LBUTTONDOWN:
         if y > 480-ICON_WIDTH:
-            for i, icon in enumerate(ICONS):
+            for i, icon in enumerate(EMOTION_ICONS):
                 if x < (i+1)*ICON_WIDTH:
+                    mode = icon if mode != icon else None
+                    return
+        elif x > 640-ICON_WIDTH:
+            for i, icon in enumerate(GESTURE_ICONS):
+                if y < (i+1)*ICON_WIDTH:
                     mode = icon if mode != icon else None
                     return
 
