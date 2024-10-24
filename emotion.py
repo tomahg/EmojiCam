@@ -50,7 +50,7 @@ def main():
                                     overlay(frame, dominant_emotion, 430,  i*200, 200, 200)
                             else:
                                 if mode in EMOTION_ICONS:
-                                    overlay(frame, mode, int(x-(w*0.35)), int(y-(h*0.4)), int(w*1.8), int(h*1.8))
+                                    overlay(frame, mode, int(x-(w*0.6)), int(y-(h*0.6)), int(w*2.2), int(h*2.2))
                 print_menu(frame)
                 cv2.namedWindow('Emotion', cv2.WINDOW_NORMAL)
                 cv2.setMouseCallback('Emotion', on_mouse)
