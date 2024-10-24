@@ -39,7 +39,7 @@ def main():
                                 cv2.rectangle(frame, start_point, end_point, color, thickness)
                                 
                                 confidence = emotion['emotion'][dominant_emotion]
-                                if confidence > 70:
+                                if confidence > 60:
                                     # Print dominant emotion
                                     print_string(frame, dominant_emotion, x, y, w, h, 1.1, 2)
                                     
