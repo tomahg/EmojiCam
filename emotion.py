@@ -1,4 +1,4 @@
-from deepface import DeepFace
+from deepface import DeepFace  # https://github.com/serengil/deepface/blob/master/deepface/DeepFace.py
 from utils.cv_utils import overlay
 import cv2
 
@@ -21,7 +21,7 @@ def main():
                 elif mode != None:
                     emotions = DeepFace.analyze(img_path = frame, actions = ['emotion'], enforce_detection=False)
                     for i, emotion in enumerate(emotions):
-                        if emotion['face_confidence'] > 0.5:
+                        if emotion['face_confidence'] > 0.25:  # The reliability of the face detection.
                             dominant_emotion = emotion['dominant_emotion']
 
                             x = emotion['region']['x']
@@ -40,7 +40,7 @@ def main():
                                 cv2.rectangle(frame, start_point, end_point, color, thickness)
                                 
                                 confidence = emotion['emotion'][dominant_emotion]
-                                if confidence > 60:
+                                if confidence > 25:
                                     # Print dominant emotion
                                     print_string(frame, dominant_emotion, x, y, w, h, 1.1, 2)
                                     
