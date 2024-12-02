@@ -4,11 +4,12 @@ import cv2
 
 EMOTION_ICONS = ['auto', 'smile', 'happy', 'lol', 'starstruck', 'love', 'shades', 'explode', 'angry', 'yawn', 'surprise', 'sad', 'neutral']
 GESTURE_ICONS = ['thumbup', 'thumbdown', 'clap', 'fist', 'raised']
+HAT_ICONS = ['christmas', 'knitted']
 ICON_WIDTH = 49
 mode = None
 
 def main():
-    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+    cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
     while cap.isOpened():
         ready, flipped_frame = cap.read()
         if ready:
@@ -16,7 +17,7 @@ def main():
                 frame = cv2.flip(flipped_frame, 1)
                 
                 if mode in GESTURE_ICONS:
-                    overlay(frame, mode, 0,  0, 300, 300)
+                    overlay(frame, mode, 20,  0, 280, 280)
                 elif mode != None:
                     emotions = DeepFace.analyze(img_path = frame, actions = ['emotion'], enforce_detection=False)
                     for i, emotion in enumerate(emotions):
@@ -47,10 +48,12 @@ def main():
                                     print_string(frame, str(int(confidence)) + '%', x, y + 40, w, h, 0.7, 1)
 
                                     # Print emoji
-                                    overlay(frame, dominant_emotion, 430,  i*200, 200, 200)
+                                    overlay(frame, dominant_emotion, 420,  i*200, 200, 200)
                             else:
                                 if mode in EMOTION_ICONS:
                                     overlay(frame, mode, int(x-(w*0.6)), int(y-(h*0.6)), int(w*2.2), int(h*2.2))
+                                if mode in HAT_ICONS:
+                                    overlay(frame, mode, int(x-(w*0.4)), int(y-(h*1.1)), int(w*1.9), int(h*1.9))
                 print_menu(frame)
                 cv2.namedWindow('Emotion', cv2.WINDOW_NORMAL)
                 cv2.setMouseCallback('Emotion', on_mouse)
@@ -69,6 +72,8 @@ def print_menu(frame):
         overlay(frame, icon, i*ICON_WIDTH,  480-ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
     for i, icon in enumerate(GESTURE_ICONS):
         overlay(frame, icon, 640-ICON_WIDTH,  i*ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
+    for i, icon in enumerate(HAT_ICONS):
+        overlay(frame, icon, 0,  i*ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
     
 def on_mouse(event, x, y, flags, param):
     global mode
@@ -80,6 +85,11 @@ def on_mouse(event, x, y, flags, param):
                     return
         elif x > 640-ICON_WIDTH:
             for i, icon in enumerate(GESTURE_ICONS):
+                if y < (i+1)*ICON_WIDTH:
+                    mode = icon if mode != icon else None
+                    return
+        elif x < ICON_WIDTH:
+            for i, icon in enumerate(HAT_ICONS):
                 if y < (i+1)*ICON_WIDTH:
                     mode = icon if mode != icon else None
                     return
