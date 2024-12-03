@@ -7,6 +7,7 @@ GESTURE_ICONS = ['thumbup', 'thumbdown', 'clap', 'fist', 'raised']
 HAT_ICONS = ['christmas', 'knitted']
 ICON_WIDTH = 49
 mode = None
+gesture = None
 
 def main():
     cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
@@ -16,9 +17,9 @@ def main():
             try:
                 frame = cv2.flip(flipped_frame, 1)
                 
-                if mode in GESTURE_ICONS:
-                    overlay(frame, mode, 20,  0, 280, 280)
-                elif mode != None:
+                if gesture in GESTURE_ICONS:
+                    overlay(frame, gesture, 20,  0, 280, 280)
+                if mode != None:
                     if mode == 'auto':
                         emotions = DeepFace.analyze(img_path = frame, actions = ['emotion'], enforce_detection=False)
                         for i, emotion in enumerate(emotions):
@@ -47,7 +48,7 @@ def main():
                                         print_string(frame, str(int(confidence)) + '%', x, y + 40, w, h, 0.7, 1)
 
                                         # Print emotion emoji
-                                        overlay(frame, dominant_emotion, 420,  i*200, 200, 200)
+                                        overlay(frame, dominant_emotion, 420, i*200, 200, 200)
                     else: # Not auto
                         faces = DeepFace.extract_faces(img_path = frame, enforce_detection=False) #Detect only faces, faster that detecting emotions too
                         for i, face in enumerate(faces):
@@ -84,7 +85,7 @@ def print_menu(frame):
         overlay(frame, icon, 0,  i*ICON_WIDTH, ICON_WIDTH, ICON_WIDTH)
     
 def on_mouse(event, x, y, flags, param):
-    global mode
+    global mode, gesture
     if event == cv2.EVENT_LBUTTONDOWN:
         if y > 480-ICON_WIDTH:
             for i, icon in enumerate(EMOTION_ICONS):
@@ -94,7 +95,7 @@ def on_mouse(event, x, y, flags, param):
         elif x > 640-ICON_WIDTH:
             for i, icon in enumerate(GESTURE_ICONS):
                 if y < (i+1)*ICON_WIDTH:
-                    mode = icon if mode != icon else None
+                    gesture = icon if gesture != icon else None
                     return
         elif x < ICON_WIDTH:
             for i, icon in enumerate(HAT_ICONS):
