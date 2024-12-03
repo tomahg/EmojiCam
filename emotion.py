@@ -58,10 +58,10 @@ def main():
                                 w = face['facial_area']['w']
                                 h = face['facial_area']['h']
 
-                        if mode in EMOTION_ICONS:
-                            overlay(frame, mode, int(x-(w*0.6)), int(y-(h*0.6)), int(w*2.2), int(h*2.2))
-                        if mode in HAT_ICONS:
-                            overlay(frame, mode, int(x-(w*0.4)), int(y-(h*1.1)), int(w*1.9), int(h*1.9))
+                            if mode in EMOTION_ICONS:
+                                overlay(frame, mode, int(x-(w*0.6)), int(y-(h*0.6)), int(w*2.2), int(h*2.2))
+                            if mode in HAT_ICONS:
+                                overlay(frame, mode, int(x-(w*0.4)), int(y-(h*1.1)), int(w*1.9), int(h*1.9))
 
                 print_menu(frame)
                 cv2.namedWindow('Emotion', cv2.WINDOW_NORMAL)
